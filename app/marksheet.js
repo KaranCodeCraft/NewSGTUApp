@@ -5,84 +5,44 @@ import {
   FlatList,
   ActivityIndicator,
   Button,
-  Platform
+  Platform,
 } from "react-native";
 import axios from "axios";
 import ApiContext from "@/context/ApiContext";
 import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+import { Buffer } from "buffer";
+import * as Print from "expo-print";
 
 const Marksheet = () => {
   const [marksheet, setMarksheet] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { url, id } = useContext(ApiContext);
+  const { url, id, token } = useContext(ApiContext);
 
-const handleDownload = async () => {
-  const filename = "resultsem1.pdf";
-  const result = await FileSystem.downloadAsync(
-    `${url}result/676c09cd926a4033af2f1475?semesterNumber=1`,
-    FileSystem.documentDirectory + filename
-  );
-  console.log("Download Result:", result);
-
-  const mimetype = result.headers["content-type"] || "application/pdf"; // Fallback MIME type
-  save(result.uri, filename, mimetype);
-};
-
-const downloadfromapi = async () => {
-  const filename = "sgtu.pdf";
-  const result = await FileSystem.downloadAsync(
-    `${url}result/676c09cd926a4033af2f1475?semesterNumber=1`,
-    FileSystem.documentDirectory + filename,
-    {
-      headers: {
-        myheader: "Myvalue",
-      },
-    }
-  );
-  console.log("Download from API:", result);
-
-  const mimetype = result.headers["content-type"] || "application/pdf"; // Fallback MIME type
-  save(result.uri, filename, mimetype);
-};
-
-const save = async (uri, filename, mimetype) => {
-  if (!mimetype) {
-    mimetype = "application/pdf"; // Default MIME type
-  }
-  console.log("Saving file with MIME Type:", mimetype);
-
-  if (Platform.OS === "android") {
+  const downloadfromapi = async (sem) => {
     try {
-      const permissions =
-        await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-      if (permissions.granted) {
-        const base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        await FileSystem.StorageAccessFramework.createFileAsync(
-          permissions.directoryUri,
-          filename,
-          mimetype
-        ).then(async (fileUri) => {
-          await FileSystem.writeAsStringAsync(fileUri, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          console.log("File saved to:", fileUri);
-        });
-      } else {
-        console.warn("Permission denied. Sharing file...");
-        Sharing.shareAsync(uri);
-      }
-    } catch (error) {
-      console.error("Error saving file:", error);
-    }
-  } else {
-    console.log("Sharing file on non-Android platform...");
-    Sharing.shareAsync(uri);
-  }
-};
+      const response = await axios.get(
+        `${url}result/${id}?semesterNumber=${sem}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "arraybuffer",
+        }
+      );
 
+      const base64String = Buffer.from(response.data, "binary").toString(
+        "base64"
+      );
+      const uri = `data:application/pdf;base64,${base64String}`;
+      const fileUri = `${FileSystem.cacheDirectory}temp.pdf`;
+
+      await FileSystem.writeAsStringAsync(fileUri, base64String, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      await Print.printAsync({ uri: fileUri });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchMarksheet = async () => {
@@ -91,7 +51,6 @@ const save = async (uri, filename, mimetype) => {
         setMarksheet(result.data.result);
       } catch (error) {
         console.error("Error fetching marksheet:", error);
-        //  Alert.alert("Error", "Failed to fetch marksheet data.");
       } finally {
         setLoading(false);
       }
@@ -133,15 +92,10 @@ const save = async (uri, filename, mimetype) => {
                 </Text>
               </View>
               <Button
-                title="View"
+                title="Download"
                 onPress={() => downloadfromapi(item.semesterNumber)}
                 color="#1d4ed8"
               />
-              {/* <Button
-                // title="Share"
-                // onPress={() => handleDownload(item.semesterNumber)}
-                // color="#1d4ed8"
-              /> */}
             </View>
           )}
         />
