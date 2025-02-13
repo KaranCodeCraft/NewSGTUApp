@@ -4,8 +4,7 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  Button,
-  Platform,
+  Button
 } from "react-native";
 import axios from "axios";
 import ApiContext from "@/context/ApiContext";

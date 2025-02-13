@@ -3,9 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -17,6 +15,13 @@
     "app/index.jsx",
     "context/ctx.js",
     "components/Button.js",
-    "nativewind-env.d.ts"
-, "app/login.js", "app/signup.js", "app/notifications.js", "app/marksheet.js"  ]
+    "nativewind-env.d.ts",
+    "app/login.js",
+    "app/signup.js",
+    "app/notifications.js",
+    "app/(taapp)/marksheet.js",
+    "app/_layout.js",
+    "app/home.js",
+    "app/index.js"
+  ]
 }

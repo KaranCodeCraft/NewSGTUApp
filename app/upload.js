@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -26,6 +27,7 @@ const UploadDocuments = () => {
     pan: { uploaded: false, uri: null },
     interMarksheet: { uploaded: false, uri: null },
   });
+const [loading, setLoading] = useState(true);
 
   const documentDownloadUrl =
     "https://api.sikkimglobaltechnicaluniversity.co.in/student/document-download";
@@ -83,11 +85,17 @@ const UploadDocuments = () => {
 
 
   useEffect(() => {
-      fetchPhoto();
-      fetchDocument("aadhar");
-      fetchDocument("pan");
-      fetchDocument("interMarksheet");
-    
+    const fetchData = async () => {
+      await Promise.all([
+        fetchPhoto(),
+        fetchDocument("aadhar"),
+        fetchDocument("pan"),
+        fetchDocument("interMarksheet"),
+      ]);
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   const handlePhotoUpload = async () => {    
@@ -100,43 +108,52 @@ const UploadDocuments = () => {
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
+      const fileName = uri.split("/").pop(); // File name extract karna
+      const fileType = fileName.split(".").pop(); // File extension extract karna
+
       const formData = new FormData();
       formData.append("file", {
         uri,
-        name: "photo.jpg",
-        type: "image/jpeg",
+        name: fileName || "photo.jpg",
+        type: `image/${fileType}`,
       });
       formData.append("studentId", studentId);
 
       try {
+        setLoading(true);
         await axios.post(photoUploadUrl, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
+          },
+          transformRequest: (data, headers) => {
+            return data; // Prevent axios from modifying FormData
           },
         });
         await fetchPhoto();
         Alert.alert("Success", "Photo uploaded successfully");
       } catch (error) {
         Alert.alert("Upload failed", error.message);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   const handleDocumentUpload = async (docName) => {
     try {
-      console.log("1: Opening Document Picker...");
+      // console.log("1: Opening Document Picker...");
       let result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf",
       });
 
       if (result.canceled) {
-        console.log("2: Document picking was canceled.");
+        // console.log("2: Document picking was canceled.");
         return;
       }
 
-      console.log("2: Document picked successfully.");
-
+      // console.log("2: Document picked successfully.");
+      setLoading(true)
       const uri = result.assets[0].uri;
       console.log("3: File URI:", uri);
 
@@ -175,6 +192,8 @@ const UploadDocuments = () => {
       }
 
       Alert.alert("Upload failed", error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -203,6 +222,17 @@ const UploadDocuments = () => {
       console.error("Error printing PDF:", error);
     }
   };
+
+   if (loading) {
+     return (
+       <View className="flex-1 justify-center items-center bg-gray-100">
+         <ActivityIndicator size="large" color="#0000ff" />
+         <Text className="text-gray-600 text-lg mt-2">
+           Fetching ...
+         </Text>
+       </View>
+     );
+   }
 
   return (
     <ScrollView>

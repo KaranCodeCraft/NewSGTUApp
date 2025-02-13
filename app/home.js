@@ -15,8 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 const StudentPanel = () => {
   const { user } = useContext(ApiContext); // Access the `user` from context
   const router = useRouter();
-  const [token, setToken] = useState<string | null>(null); // State to store token
-  const [loading, setLoading] = useState<boolean>(true); // State for loading
+  const [token, setToken] = useState(null); // State to store token
+  const [loading, setLoading] = useState(true); // State for loading
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -55,11 +55,11 @@ const StudentPanel = () => {
   }
 
   return (
-    <View className="flex-1 justify-center items-center bg-gray-100 px-6">
+    <View className="flex-1 justify-center items-center bg-white px-6">
       {/* University Logo */}
       <Image
         source={require("@/Assets/logo.png")}
-        className="w-36 h-36 mb-6"
+        className="w-52 h-52 mb-6"
         resizeMode="contain"
       />
 
