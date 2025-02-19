@@ -122,17 +122,26 @@ const [loading, setLoading] = useState(true);
       try {
         setLoading(true);
         await axios.post(photoUploadUrl, formData, {
+          timeout: 30000,
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
           transformRequest: (data, headers) => {
-            return data; // Prevent axios from modifying FormData
+            return data; 
           },
         });
         await fetchPhoto();
         Alert.alert("Success", "Photo uploaded successfully");
       } catch (error) {
+        if (error.response) {
+          console.log("Server Response Error:", error.response.data);
+        } else if (error.request) {
+          console.log("No Response Received:", error.request);
+        } else {
+          console.log("Axios Config Error:", error.message);
+        }
+        
         Alert.alert("Upload failed", error.message);
       } finally {
         setLoading(false);
