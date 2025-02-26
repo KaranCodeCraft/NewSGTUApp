@@ -15,80 +15,75 @@ import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 
 const Login = () => {
-  const { setUser, url, verifyToken, setToken, setId } = useContext(ApiContext); // ApiContext provides API URL, user state, and token verification function
-  const [aadharNumber, setaadharNumber] = useState(""); // State for Aadhar number
-  const [enrollmentNumber, setEnrollmentNumber] = useState(""); // State for enrollment number
-  const [isVerifying, setIsVerifying] = useState(true); // State to handle token verification
-  const router = useRouter(); // Router for navigation
+  const { setUser, url, verifyToken, setToken, setId } = useContext(ApiContext); 
+  const [aadharNumber, setaadharNumber] = useState("");
+  const [enrollmentNumber, setEnrollmentNumber] = useState(""); 
+  const [isVerifying, setIsVerifying] = useState(true); 
+  const router = useRouter(); 
   const [logging, setLogging] = useState(false)
 
-  // Function to handle login
+ 
   const handleLogin = async () => {
     if (!aadharNumber || !enrollmentNumber) {
-      return Alert.alert("Please fill all the fields"); // Ensure all fields are filled
+      return Alert.alert("Please fill all the fields"); 
     }
     setLogging(true)
     try {
-      // API call to login endpoint
+   
       const response = await axios.post(`${url}student/login`, {
         enrollmentNumber,
         aadharNumber: Number(aadharNumber),
       });
-
-      // Save token in SecureStore
-      // console.log(JSON.stringify(response.data.token));
-      
       await SecureStore.setItemAsync("token", JSON.stringify(response.data.token));
       await SecureStore.setItemAsync("id", JSON.stringify(response.data.id));
       setToken(response.data.token.replace(/^"|"$/g, ""));
       setId(response.data.id);
-      // Set user state
+      
       setUser(response.data.data);
 
-      // Notify user of successful login
+    
       Alert.alert(`Login Successful: ${response.data.name}`);
       setLogging(false)
-      // Navigate to the home page
+     
       router.replace("/home");
     } catch (error) {
-      // Handle API errors
+     
       if (error.response) {
-        Alert.alert(error.response.data.message); // Display API error message
+        Alert.alert(error.response.data.message); 
       } else {
-        Alert.alert("Something went wrong. Please try again."); // Handle general errors
+        Alert.alert("Something went wrong. Please try again."); 
       }
     }finally{
       setLogging(false);
     }
   };
 
-  // Automatically verify token when component gains focus
+ 
   useFocusEffect(
     React.useCallback(() => {
-      // Define the async function inside the effect
+     
       const checkToken = async () => {
         try {
-          const token = await SecureStore.getItemAsync("token"); // Retrieve token from SecureStore
+          const token = await SecureStore.getItemAsync("token");
           if (!token) {
-            setIsVerifying(false); // Stop verifying if token is missing
+            setIsVerifying(false);
             return;
           }
-          const isValid = await verifyToken(token); // Call verifyToken function
+          const isValid = await verifyToken(token);
           if (isValid) {
-            router.replace("/home"); // Navigate to the home page if token is valid
+            router.replace("/home"); 
           }
         } catch (error) {
-          // console.error("Error verifying token:", error); // Log errors
+          
         } finally {
-          setIsVerifying(false); // Stop verifying
+          setIsVerifying(false); 
         }
       };
 
-      checkToken(); // Call the async function
-    }, [router, verifyToken]) // Dependencies
+      checkToken(); 
+    }, [router, verifyToken]) 
   );
 
-  // Show loading spinner while verifying token
   if (isVerifying) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -98,12 +93,12 @@ const Login = () => {
     );
   }
 
-  // Render login form
+ 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100 p-6">
       <View className="h-48 w-48 bg-white rounded-full overflow-hidden justify-center items-center mb-6">
         <Image
-          source={require("@/Assets/logo.png")} // Path to logo image
+          source={require("@/Assets/logo.png")} 
           className="h-full w-10/12 bg-inherit"
           resizeMode="cover"
         />
@@ -112,19 +107,19 @@ const Login = () => {
       <TextInput
         placeholder="Aadhar Number"
         className="w-4/5 h-14 border border-gray-700 mb-6 px-4 rounded-lg bg-white shadow"
-        onChangeText={setaadharNumber} // Update Aadhar number state
+        onChangeText={setaadharNumber}
         value={aadharNumber}
         keyboardType="number-pad"
       />
       <TextInput
         placeholder="Enrollment Number"
         className="w-4/5 h-14 border border-gray-700 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setEnrollmentNumber} // Update enrollment number state
+        onChangeText={setEnrollmentNumber} 
         value={enrollmentNumber}
       />
       <TouchableOpacity
         className="w-4/5 mt-8 flex justify-center items-center bg-orange-400 py-3 px-6 rounded-lg"
-        onPress={handleLogin} // Trigger login function
+        onPress={handleLogin} 
         disabled={logging}
       >
         <Text className="text-white font-bold text-lg">
@@ -133,7 +128,7 @@ const Login = () => {
       </TouchableOpacity>
       <TouchableOpacity
         className="w-4/5 mt-6 flex justify-center items-center bg-blue-500 py-3 px-6 rounded-lg"
-        onPress={() => router.push("/signup")} // Navigate to sign-up page
+        onPress={() => router.push("/signup")} 
         disabled={logging}
       >
         <Text className="text-white font-bold text-lg">Register</Text>

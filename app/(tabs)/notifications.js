@@ -57,12 +57,7 @@ const Notifications = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50 p-4">
-      {/* <Text className="text-center text-2xl font-bold text-orange-500 mb-4">
-        Notifications
-      </Text> */}
-
-      {/* Filter Tabs */}
+    <View className="flex-1 bg-gray-50 p-4">    
       <View className="flex-row justify-around mb-4">
         {["all", "exam", "general", "result"].map((tab) => (
           <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
@@ -79,11 +74,11 @@ const Notifications = () => {
         ))}
       </View>
 
-      {/* Notifications List */}
+     
       {filteredNotifications.length > 0 ? (
         <FlatList
           data={filteredNotifications}
-          keyExtractor={(item) => item._id} // ✅ Corrected ID field
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleNotificationClick(item)}>
               <View className="bg-white rounded-lg p-4 mb-4 shadow">
@@ -103,7 +98,7 @@ const Notifications = () => {
         </Text>
       )}
 
-      {/* Notification Modal */}
+    
       <Modal
         animationType="slide"
         transparent={true}

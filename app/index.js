@@ -13,21 +13,25 @@ const Index = () => {
   const checkToken = React.useCallback(async () => {
     try {
       setIsVerifying(true); 
-      const token = await SecureStore.getItemAsync("token");
-       if (!token) {
+      let res = await SecureStore.getItemAsync("token");
+      
+       if (!res) {
          router.replace("/login");
          return;
        }
-      //  console.log("Retrieved Token:", token);
-        const isValid = await verifyToken(token.replace(/^"|"$/g, ""));
+       
+       res = res.replace(/"/g, "");
+       console.log("Retrieved Token:", res);
+
+        const isValid = await verifyToken(res);
         if (isValid) {
-          setToken(token.replace(/^"|"$/g, ""))
+          setToken(res)
           router.replace("/home");
         } else {
           router.replace("/login");
         }
     } catch (error) {
-      // console.error("Error retrieving token:", error);
+      console.error(error);
       Alert.alert("Error", "An error occurred while verifying the token.");
     } finally {
       setIsVerifying(false);

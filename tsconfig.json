@@ -18,10 +18,10 @@
     "nativewind-env.d.ts",
     "app/login.js",
     "app/signup.js",
-    "app/notifications.js",
+    "app/(tabs)/notifications.js",
     "app/(taapp)/marksheet.js",
     "app/_layout.js",
-    "app/home.js",
+    "app/(tabs)/home.js",
     "app/index.js"
   ]
 }

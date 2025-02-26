@@ -67,7 +67,7 @@ const OtpVerification = () => {
     } catch (error) {
       console.error("Error retrieving token:", error);
     } finally {
-      setIsVerifying(false); // Stop verifying after check
+      setIsVerifying(false);
     }
   }, [router, verifyToken]);
 

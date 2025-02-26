@@ -11,18 +11,25 @@ const ApiState = (props) => {
   const [id, setId] = useState(null)
   const [notification, setNotification] = useState([])
 
-  async function verifyToken(token) {
-    try {
-      // console.log(`Bearer ${token}`);
-      
-      const response = await axios.get(`${url}verifyToken`, {headers: {
-          Authorization: `Bearer ${token}`, 
-        }})
-      await SecureStore.setItemAsync("id", response.data.id);
-      setId(response.data.id)
+  async function verifyToken(oldtken) {
+    try {  
+      const response = await axios.get(`${url}verifyToken`, {
+        headers: {
+          Authorization: `Bearer ${oldtken}`,
+        },
+      });
+      const ntkn = response.data.user.id
+      setId(ntkn);
+      // setUser(response.data.user)
+      await SecureStore.setItemAsync("id", JSON.stringify(ntkn));
+      const newdata = await axios.post(`${url}student/login`, {
+        enrollmentNumber: response.data.user.enrollmentNumber,
+        aadharNumber: response.data.user.aadharNumber,
+      });
+      setUser(newdata.data.data);
       return true
     } catch (error) {
-      // console.error("Error verifying token:", error);
+      console.error("Error verifying token:", error);
       return false;
     }
   }

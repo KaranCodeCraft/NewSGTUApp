@@ -84,7 +84,7 @@ const SignUp = () => {
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100 p-6">
-      {/* Logo Section */}
+    
       <View className="h-48 w-48 bg-white rounded-full overflow-hidden justify-center items-center mb-6">
         <Image
           source={require("@/Assets/logo.png")}
@@ -93,10 +93,10 @@ const SignUp = () => {
         />
       </View>
 
-      {/* Title */}
+    
       <Text className="text-blue-600 font-bold text-2xl mb-4">Sign Up</Text>
 
-      {/* Input Fields */}
+   
       <TextInput
         placeholder="Aadhar Number"
         className="w-4/5 h-14 border border-gray-700 mb-4 px-4 rounded-lg bg-white shadow"
@@ -111,12 +111,12 @@ const SignUp = () => {
         value={enrollmentNumber}
       />
 
-      {/* OTP Information */}
+      
       <Text className="text-gray-600 text-sm mb-4">
         OTP will be sent to your registered mobile number for verification.
       </Text>
 
-      {/* Sign Up Button */}
+    
       <TouchableOpacity
         className="w-4/5 mt-6 flex justify-center items-center bg-orange-400 py-3 px-6 rounded-lg"
         onPress={handleSignUp}
@@ -127,7 +127,7 @@ const SignUp = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Redirect to Login */}
+      
       <Text
         className="text-center text-gray-600 text-sm mt-4"
         onPress={() => router.push("/login")}

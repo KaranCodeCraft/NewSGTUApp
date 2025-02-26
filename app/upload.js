@@ -19,8 +19,8 @@ import * as FileSystem from "expo-file-system";
 import * as Print from "expo-print";
 
 const UploadDocuments = () => {
-  const { token, user, url } = useContext(ApiContext);
-  const studentId = user?._id;
+  const { token, user, url, id } = useContext(ApiContext);
+  const studentId = id;
    const [photo, setPhoto] = useState(null);
   const [documents, setDocuments] = useState({
     aadhar: { uploaded: false, uri: null },
@@ -108,8 +108,8 @@ const [loading, setLoading] = useState(true);
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
-      const fileName = uri.split("/").pop(); // File name extract karna
-      const fileType = fileName.split(".").pop(); // File extension extract karna
+      const fileName = uri.split("/").pop();
+      const fileType = fileName.split(".").pop(); 
 
       const formData = new FormData();
       formData.append("file", {

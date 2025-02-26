@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Image, ScrollView, ActivityIndicator, Alert } from "react-native";
 import {
   User,
   Phone,
@@ -13,16 +13,17 @@ import { Buffer } from "buffer";
 import ApiContext from "@/context/ApiContext";
 
 const Profile = () => {
-  const { user, token, url } = useContext(ApiContext);
+  const { user, token, url, id } = useContext(ApiContext);
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 📷 Fetch Profile Photo from API
+  
   const fetchPhoto = async () => {
     try {
       setLoading(true);
+      // Alert.alert(user._id)
       const response = await axios.get(
-        `${url}student/photo-download?studentId=${user._id}`,
+        `${url}student/photo-download?studentId=${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           responseType: "arraybuffer", // Get raw binary data
@@ -43,7 +44,7 @@ const Profile = () => {
     }
   };
 
-  // 🔄 Fetch photo on component mount
+  
   useEffect(() => {
     fetchPhoto();
   }, []);
@@ -60,7 +61,7 @@ const Profile = () => {
 
   return (
     <ScrollView className="flex-1 bg-white p-6">
-      {/* Profile Header */}
+     
       <View className="items-center mb-8">
         <View className="w-36 h-36 rounded-full border-4 border-blue-500 shadow-lg overflow-hidden">
           {loading ? (
@@ -80,7 +81,7 @@ const Profile = () => {
         <Text className="text-lg text-gray-600">{user.enrollmentNumber}</Text>
       </View>
 
-      {/* Student Details */}
+    
       <View className="bg-gray-50 p-5 rounded-lg shadow-md mb-4">
         <Text className="text-xl font-semibold text-gray-800 mb-3 flex flex-row items-center">
           <User className="mr-2" /> Profile Information
@@ -97,7 +98,7 @@ const Profile = () => {
         <DetailItem label="Stream" value={user.stream} />
       </View>
 
-      {/* Registration & Subscription Details */}
+     
       <View className="bg-gray-50 p-5 rounded-lg shadow-md mb-4">
         <Text className="text-xl font-semibold text-gray-800 mb-3 flex flex-row items-center">
           <CheckCircle className="mr-2" /> Registration & Subscription
@@ -120,7 +121,7 @@ const Profile = () => {
         />
       </View>
 
-      {/* Uploaded Documents */}
+     
       <View className="bg-gray-50 p-5 rounded-lg shadow-md">
         <Text className="text-xl font-semibold text-gray-800 mb-3 flex flex-row items-center">
           <FileText className="mr-2" /> Uploaded Documents
@@ -142,7 +143,7 @@ const Profile = () => {
   );
 };
 
-// 🎨 Reusable DetailItem Component for better UI
+
 const DetailItem = ({ label, value, icon: Icon }) => (
   <View className="flex-row items-center mb-2">
     {Icon && <Icon className="text-blue-500 mr-2" size={18} />}

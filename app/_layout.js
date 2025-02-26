@@ -4,7 +4,7 @@ import ApiState from "@/context/ApiState";
 import "../global.css";
 
 const _layout = () => {
-  // console.log("in the layout");
+ 
   return (
     <ApiState>
       <Stack screenOptions={{ headerShown: false }}>
@@ -15,10 +15,12 @@ const _layout = () => {
             headerLeft: () => null,
           }}
         />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="home" options={{ headerShown: false }} />
         <Stack.Screen name="notifications" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ headerShown: false }} />
+        <Stack.Screen name="support" options={{ headerShown: false }} />
       </Stack>
     </ApiState>
   );
